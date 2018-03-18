@@ -87,6 +87,7 @@ namespace Wakaran
             System.Text.Encoding encoding = System.Text.Encoding.UTF8;
             if (SelectedLanguage == Language.Chinese)
             {
+                // Google translate uses iso-8859-1 for Chinese pinyin encoding.
                 encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
             }
 
@@ -206,14 +207,12 @@ namespace Wakaran
         {
             base.WndProc(ref m);
 
-            if (m.Msg == 0x0312)
+            if (m.Msg == 0x0312) // WM_HOTKEY
             {
                 SearchText =  Clipboard.GetText();
                 
                 if(SearchText != "")
                 {
-                    SendKeys.Send("^c");
-
                     TimeAtActivation = DateTime.Now.TimeOfDay;
                     this.Visible = true;
                     this.WindowState = FormWindowState.Normal;
@@ -227,10 +226,6 @@ namespace Wakaran
                     FillExamples();
                 }
             }
-        }
-
-        private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
-        {
         }
 
         private void listExampleSentences_KeyUp(object sender, KeyEventArgs e)

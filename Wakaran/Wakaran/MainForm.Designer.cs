@@ -67,14 +67,14 @@
             // 
             this.txtRomaji.BackColor = System.Drawing.Color.White;
             this.txtRomaji.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtRomaji.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtRomaji.Font = new System.Drawing.Font("MingLiU", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtRomaji.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.txtRomaji.Location = new System.Drawing.Point(18, 143);
             this.txtRomaji.Name = "txtRomaji";
             this.txtRomaji.ReadOnly = true;
             this.txtRomaji.Size = new System.Drawing.Size(613, 102);
             this.txtRomaji.TabIndex = 2;
-            this.txtRomaji.Text = "入力テスト";
+            this.txtRomaji.Text = "Test";
             // 
             // txtEnglish
             // 
