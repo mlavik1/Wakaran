@@ -40,6 +40,7 @@
             this.sourceText = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.translation = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.btnStrokeOrder = new System.Windows.Forms.Button();
             this.btnLanguageCN = new System.Windows.Forms.Button();
             this.btnLanguageJP = new System.Windows.Forms.Button();
             this.btnLinkGoogleTrans = new System.Windows.Forms.Button();
@@ -169,6 +170,18 @@
             this.timer1.Interval = 1;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // btnStrokeOrder
+            // 
+            this.btnStrokeOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnStrokeOrder.BackgroundImage = global::Wakaran.Properties.Resources.StrokeOrderIcon1;
+            this.btnStrokeOrder.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnStrokeOrder.Location = new System.Drawing.Point(200, 394);
+            this.btnStrokeOrder.Name = "btnStrokeOrder";
+            this.btnStrokeOrder.Size = new System.Drawing.Size(88, 84);
+            this.btnStrokeOrder.TabIndex = 8;
+            this.btnStrokeOrder.UseVisualStyleBackColor = true;
+            this.btnStrokeOrder.Click += new System.EventHandler(this.btnStrokeOrder_Click);
+            // 
             // btnLanguageCN
             // 
             this.btnLanguageCN.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -223,6 +236,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(727, 476);
             this.ControlBox = false;
+            this.Controls.Add(this.btnStrokeOrder);
             this.Controls.Add(this.btnLanguageCN);
             this.Controls.Add(this.btnLanguageJP);
             this.Controls.Add(this.btnLinkGoogleTrans);
@@ -256,5 +270,6 @@
         private System.Windows.Forms.Button btnLinkWeblio;
         private System.Windows.Forms.Button btnLanguageJP;
         private System.Windows.Forms.Button btnLanguageCN;
+        private System.Windows.Forms.Button btnStrokeOrder;
     }
 }

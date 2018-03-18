@@ -280,5 +280,19 @@ namespace Wakaran
                 FillExamples();
             }
         }
+
+        private void btnStrokeOrder_Click(object sender, EventArgs e)
+        {
+            string strokeOrderURL;
+            if (SelectedLanguage == Language.Japanese)
+            {
+                strokeOrderURL = String.Format("http://jisho.org/search/%23kanji {0}", SearchText);
+            }
+            else
+            {
+                strokeOrderURL = String.Format("https://www.yellowbridge.com/chinese/character-stroke-order.php?word={0}", SearchText);
+            }
+            System.Diagnostics.Process.Start(strokeOrderURL);
+        }
     }
 }

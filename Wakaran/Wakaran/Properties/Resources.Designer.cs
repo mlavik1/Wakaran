@@ -93,6 +93,26 @@ namespace Wakaran.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap StrokeOrderIcon {
+            get {
+                object obj = ResourceManager.GetObject("StrokeOrderIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap StrokeOrderIcon1 {
+            get {
+                object obj = ResourceManager.GetObject("StrokeOrderIcon1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Weblio {
             get {
                 object obj = ResourceManager.GetObject("Weblio", resourceCulture);
