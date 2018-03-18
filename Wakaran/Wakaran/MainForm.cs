@@ -55,25 +55,33 @@ namespace Wakaran
         {
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
-            RegisterHotKey(this.Handle, 0, (int)KeyModifier.Control, Keys.X.GetHashCode());
+            RegisterHotKey(this.Handle, 0, (int)KeyModifier.Control | (int)KeyModifier.Alt, Keys.C.GetHashCode());
 
             ListViewItem item1 = new ListViewItem(new[] { "Test", "English"});
             listExampleSentences.Items.Add(item1);
 
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
+
+            MessageBox.Show("Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry foc the copied text.", "How to use");
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //UnregisterHotKey(this.Handle, 0);
-            this.Visible = false;
-            //RegisterHotKey(this.Handle, 0, (int)KeyModifier.Control, Keys.X.GetHashCode());
-            e.Cancel = true;
-        }
-
+        /// <summary>
+        /// Fills dictionary with translation and reading (translit).
+        /// </summary>
         private void FillDictionary()
         {
+            if(SelectedLanguage == Language.Japanese)
+            {
+                listExampleSentences.Columns[0].Text = "Japanese";
+                listExampleSentences.Columns[1].Text = "English";
+            }
+            else if(SelectedLanguage == Language.Chinese)
+            {
+                listExampleSentences.Columns[0].Text = "中文";
+                listExampleSentences.Columns[1].Text = "日本語";
+            }
+
             string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", SearchText, SelectedLanguage == Language.Japanese ? "ja|en" : "cn|en");
 
             System.Text.Encoding encoding = System.Text.Encoding.UTF8;
@@ -88,7 +96,7 @@ namespace Wakaran
             string googleResult;
             try
             {
-                var htmlData = webClient.DownloadData(googleTranslateURL);
+                byte[] htmlData = webClient.DownloadData(googleTranslateURL);
                 googleResult = encoding.GetString(htmlData);
             }
             catch(Exception ex)
@@ -112,12 +120,15 @@ namespace Wakaran
             this.txtEnglish.Text = txtResultBox;
         }
 
+        /// <summary>
+        /// Fills example-tab with list of examples.
+        /// </summary>
         private async void FillExamples()
         {
             listExampleSentences.Items.Clear();
 
-            List<string> japaneseTexts = new List<string>();
-            List<string> englishTexts = new List<string>();
+            List<string> sourceTexts = new List<string>();
+            List<string> translatedTexts = new List<string>();
 
             await Task.Run(() =>
             {
@@ -152,7 +163,7 @@ namespace Wakaran
                         str = str.Substring(0, iSpan);
                     }
                     str = str.Replace("<b>", "").Replace("</b>", "");
-                    japaneseTexts.Add(str);
+                    sourceTexts.Add(str);
                 }
 
                 r = new Regex(Regex.Escape(String.Format("<p class=qot{0}>", targetTextClassName)) + "(.*?)" + Regex.Escape("</p>"));
@@ -180,13 +191,13 @@ namespace Wakaran
                         str = Regex.Replace(str, "<span>(.*?)</span>", "");
                         startIndex = str.IndexOf('<');
                     }
-                    englishTexts.Add(str);
+                    translatedTexts.Add(str);
                 }
             });
 
-            for (int i = 0; i < japaneseTexts.Count() && i < englishTexts.Count(); i++)
+            for (int i = 0; i < sourceTexts.Count() && i < translatedTexts.Count(); i++)
             {
-                ListViewItem item1 = new ListViewItem(new[] { japaneseTexts[i], englishTexts[i] });
+                ListViewItem item1 = new ListViewItem(new[] { sourceTexts[i], translatedTexts[i] });
                 listExampleSentences.Items.Add(item1);
             }
         }
@@ -201,26 +212,21 @@ namespace Wakaran
                 
                 if(SearchText != "")
                 {
-                    {
-                        TimeAtActivation = DateTime.Now.TimeOfDay;
-                        this.Visible = true;
-                        this.WindowState = FormWindowState.Normal;
-                        this.TopMost = true;
-                        this.BringToFront();
-                        SetForegroundWindow(this.Handle);
+                    SendKeys.Send("^c");
 
-                        tabControl.SelectTab(0);
+                    TimeAtActivation = DateTime.Now.TimeOfDay;
+                    this.Visible = true;
+                    this.WindowState = FormWindowState.Normal;
+                    this.TopMost = true;
+                    this.BringToFront();
+                    SetForegroundWindow(this.Handle);
 
-                        FillDictionary();
-                        FillExamples();
-                    }
+                    tabControl.SelectTab(0);
+
+                    FillDictionary();
+                    FillExamples();
                 }
             }
-        }
-
-        private void ExampleForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            UnregisterHotKey(this.Handle, 0);
         }
 
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)

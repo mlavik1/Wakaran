@@ -171,6 +171,7 @@
             // 
             // btnLanguageCN
             // 
+            this.btnLanguageCN.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLanguageCN.BackgroundImage = global::Wakaran.Properties.Resources.flag_cn;
             this.btnLanguageCN.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnLanguageCN.Location = new System.Drawing.Point(645, 398);
@@ -182,6 +183,7 @@
             // 
             // btnLanguageJP
             // 
+            this.btnLanguageJP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLanguageJP.BackgroundImage = global::Wakaran.Properties.Resources.flag_jp;
             this.btnLanguageJP.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnLanguageJP.Location = new System.Drawing.Point(564, 397);
