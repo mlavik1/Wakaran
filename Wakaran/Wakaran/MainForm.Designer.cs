@@ -45,9 +45,15 @@
             this.btnLanguageJP = new System.Windows.Forms.Button();
             this.btnLinkGoogleTrans = new System.Windows.Forms.Button();
             this.btnLinkWeblio = new System.Windows.Forms.Button();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataViewKanji = new System.Windows.Forms.DataGridView();
+            this.KanjiImage = new System.Windows.Forms.DataGridViewImageColumn();
+            this.KanjiInfo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataViewKanji)).BeginInit();
             this.SuspendLayout();
             // 
             // txtSearchText
@@ -96,6 +102,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabPage1);
             this.tabControl.Controls.Add(this.tabPage2);
+            this.tabControl.Controls.Add(this.tabPage3);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -230,6 +237,47 @@
             this.btnLinkWeblio.UseVisualStyleBackColor = true;
             this.btnLinkWeblio.Click += new System.EventHandler(this.btnLinkWeblio_Click);
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataViewKanji);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(704, 351);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Kanji";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataViewKanji
+            // 
+            this.dataViewKanji.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataViewKanji.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataViewKanji.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dataViewKanji.ColumnHeadersHeight = 25;
+            this.dataViewKanji.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dataViewKanji.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.KanjiImage,
+            this.KanjiInfo});
+            this.dataViewKanji.Location = new System.Drawing.Point(19, 19);
+            this.dataViewKanji.Name = "dataViewKanji";
+            this.dataViewKanji.RowTemplate.Height = 100;
+            this.dataViewKanji.Size = new System.Drawing.Size(668, 311);
+            this.dataViewKanji.TabIndex = 1;
+            // 
+            // KanjiImage
+            // 
+            this.KanjiImage.FillWeight = 38.07107F;
+            this.KanjiImage.HeaderText = "Kanji";
+            this.KanjiImage.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.KanjiImage.Name = "KanjiImage";
+            // 
+            // KanjiInfo
+            // 
+            this.KanjiInfo.FillWeight = 111.9289F;
+            this.KanjiInfo.HeaderText = "Info";
+            this.KanjiInfo.Name = "KanjiInfo";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -249,6 +297,8 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataViewKanji)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -271,5 +321,9 @@
         private System.Windows.Forms.Button btnLanguageJP;
         private System.Windows.Forms.Button btnLanguageCN;
         private System.Windows.Forms.Button btnStrokeOrder;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataViewKanji;
+        private System.Windows.Forms.DataGridViewImageColumn KanjiImage;
+        private System.Windows.Forms.DataGridViewTextBoxColumn KanjiInfo;
     }
 }

@@ -57,7 +57,7 @@ namespace Wakaran
             this.ShowInTaskbar = false;
             RegisterHotKey(this.Handle, 0, (int)KeyModifier.Control | (int)KeyModifier.Alt, Keys.C.GetHashCode());
 
-            ListViewItem item1 = new ListViewItem(new[] { "Test", "English"});
+            ListViewItem item1 = new ListViewItem(new[] { "Test", "English" });
             listExampleSentences.Items.Add(item1);
 
             this.WindowState = FormWindowState.Minimized;
@@ -71,12 +71,12 @@ namespace Wakaran
         /// </summary>
         private void FillDictionary()
         {
-            if(SelectedLanguage == Language.Japanese)
+            if (SelectedLanguage == Language.Japanese)
             {
                 listExampleSentences.Columns[0].Text = "Japanese";
                 listExampleSentences.Columns[1].Text = "English";
             }
-            else if(SelectedLanguage == Language.Chinese)
+            else if (SelectedLanguage == Language.Chinese)
             {
                 listExampleSentences.Columns[0].Text = "中文";
                 listExampleSentences.Columns[1].Text = "日本語";
@@ -100,7 +100,7 @@ namespace Wakaran
                 byte[] htmlData = webClient.DownloadData(googleTranslateURL);
                 googleResult = encoding.GetString(htmlData);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // TODO: Show message
                 return;
@@ -203,6 +203,43 @@ namespace Wakaran
             }
         }
 
+        private async void FillKanjiPage()
+        {
+            dataViewKanji.Rows.Clear();
+
+            List<Image> images = new List<Image>();
+            List<String> texts = new List<string>();
+
+            await Task.Run(() =>
+            {
+                foreach (char c in SearchText)
+                {
+                    string kanjiURL = String.Format("http://kanji.nihongo.cz/image.php?text={0}&font=sod.ttf&fontsize=300", c);
+
+                    Uri uriResult;
+                    bool isValidURL = Uri.TryCreate(kanjiURL, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
+                    if (isValidURL)
+                    {
+                        byte[] imageData = (new WebClient()).DownloadData(uriResult);
+                        MemoryStream stream = new MemoryStream(imageData);
+                        Image img = Image.FromStream(stream);
+
+                        images.Add(img);
+                        texts.Add("TODO");
+                    }
+                }
+            });
+
+            for (int i = 0; i < images.Count; i++)
+                dataViewKanji.Rows.Add();
+
+            for(int i = 0; i < images.Count; i++)
+            {
+                dataViewKanji.Rows[i].Cells[0].Value = images[i];
+                dataViewKanji.Rows[i].Cells[1].Value = texts[i];       
+            }
+        }
+
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
@@ -224,6 +261,7 @@ namespace Wakaran
 
                     FillDictionary();
                     FillExamples();
+                    FillKanjiPage();
                 }
             }
         }
