@@ -229,6 +229,10 @@ namespace Wakaran
             {
                 dataViewKanji.Columns[0].Width = 250;
             }
+            else
+            {
+                dataViewKanji.Columns[0].Width = 180;
+            }
 
             List<Image> images = new List<Image>();
             List<String> texts = new List<string>();
@@ -247,12 +251,18 @@ namespace Wakaran
                     bool isValidURL = Uri.TryCreate(kanjiURL, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
                     if (isValidURL)
                     {
-                        byte[] imageData = (new WebClient()).DownloadData(uriResult);
-                        MemoryStream stream = new MemoryStream(imageData);
-                        Image img = Image.FromStream(stream);
+                        try
+                        {
+                            byte[] imageData = (new WebClient()).DownloadData(uriResult);
+                            MemoryStream stream = new MemoryStream(imageData);
+                            Image img = Image.FromStream(stream);
 
-                        images.Add(img);
-                        texts.Add("TODO");
+                            images.Add(img);
+                            texts.Add("TODO");
+                        }
+                        catch (System.Net.WebException ex)
+                        {
+                        }
                     }
                 }
             });
