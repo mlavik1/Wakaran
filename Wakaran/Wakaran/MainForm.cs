@@ -71,24 +71,30 @@ namespace Wakaran
         /// </summary>
         private void FillDictionary()
         {
-            if (SelectedLanguage == Language.Japanese)
+            bool textIsANSI = true;
+            foreach(char c in SearchText)
             {
-                listExampleSentences.Columns[0].Text = "Japanese";
-                listExampleSentences.Columns[1].Text = "English";
-            }
-            else if (SelectedLanguage == Language.Chinese)
-            {
-                listExampleSentences.Columns[0].Text = "中文";
-                listExampleSentences.Columns[1].Text = "日本語";
+                if(c >= 0x00ff)
+                {
+                    textIsANSI = false;
+                    break;
+                }
             }
 
-            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", SearchText, SelectedLanguage == Language.Japanese ? "ja|en" : "cn|en");
+            string selectedLanguageCode = SelectedLanguage == Language.Japanese ? "ja" : "cn";
+            string languageSearchCode = textIsANSI ? "en|" + selectedLanguageCode : selectedLanguageCode + "|en";
+
+            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", SearchText, languageSearchCode);
 
             System.Text.Encoding encoding = System.Text.Encoding.UTF8;
             if (SelectedLanguage == Language.Chinese)
             {
                 // Google translate uses iso-8859-1 for Chinese pinyin encoding.
                 encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
+            }
+            else
+            {
+                encoding = System.Text.Encoding.GetEncoding("Shift_JIS");
             }
 
             WebClient webClient = new WebClient();
@@ -127,6 +133,17 @@ namespace Wakaran
         private async void FillExamples()
         {
             listExampleSentences.Items.Clear();
+
+            if (SelectedLanguage == Language.Japanese)
+            {
+                listExampleSentences.Columns[0].Text = "Japanese";
+                listExampleSentences.Columns[1].Text = "English";
+            }
+            else if (SelectedLanguage == Language.Chinese)
+            {
+                listExampleSentences.Columns[0].Text = "中文";
+                listExampleSentences.Columns[1].Text = "日本語";
+            }
 
             List<string> sourceTexts = new List<string>();
             List<string> translatedTexts = new List<string>();
@@ -190,6 +207,7 @@ namespace Wakaran
                         }
                         str = str.Remove(startIndex, i - startIndex + 1);
                         str = Regex.Replace(str, "<span>(.*?)</span>", "");
+                        str = Regex.Replace(str, "&(.*?);", "");
                         startIndex = str.IndexOf('<');
                     }
                     translatedTexts.Add(str);
@@ -207,6 +225,11 @@ namespace Wakaran
         {
             dataViewKanji.Rows.Clear();
 
+            if (SelectedLanguage == Language.Chinese)
+            {
+                dataViewKanji.Columns[0].Width = 250;
+            }
+
             List<Image> images = new List<Image>();
             List<String> texts = new List<string>();
 
@@ -214,7 +237,11 @@ namespace Wakaran
             {
                 foreach (char c in SearchText)
                 {
-                    string kanjiURL = String.Format("http://kanji.nihongo.cz/image.php?text={0}&font=sod.ttf&fontsize=300", c);
+                    string kanjiURL;
+                    if (SelectedLanguage == Language.Japanese)
+                        kanjiURL = String.Format("http://kanji.nihongo.cz/image.php?text={0}&font=sod.ttf&fontsize=300", c);
+                    else
+                        kanjiURL = String.Format("http://cdn.yabla.com/chinese_static/strokes/{0}-bw.png", c);
 
                     Uri uriResult;
                     bool isValidURL = Uri.TryCreate(kanjiURL, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
@@ -301,6 +328,7 @@ namespace Wakaran
             {
                 FillDictionary();
                 FillExamples();
+                FillKanjiPage();
             }
         }
 
@@ -311,6 +339,7 @@ namespace Wakaran
             {
                 FillDictionary();
                 FillExamples();
+                FillKanjiPage();
             }
         }
 
