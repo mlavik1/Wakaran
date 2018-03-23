@@ -34,17 +34,14 @@ namespace Wakaran
             WinKey = 8
         }
 
-        enum Language
-        {
-            Japanese,
-            Chinese
-        }
+        TranslationHelper mTranslationHelper = new TranslationHelper();
+        ExampleSentenceHelper mExampleSentenceHelper = new ExampleSentenceHelper();
 
-        static string SearchText = "";
+        string mSearchText = "";
 
-        static TimeSpan TimeAtActivation = DateTime.Now.TimeOfDay;
+        TimeSpan mTimeAtActivation = DateTime.Now.TimeOfDay;
 
-        static Language SelectedLanguage = Language.Japanese;
+        Language mSelectedLanguage = Language.Japanese;
 
         public MainForm()
         {
@@ -71,60 +68,11 @@ namespace Wakaran
         /// </summary>
         private void FillDictionary()
         {
-            bool textIsANSI = true;
-            foreach(char c in SearchText)
-            {
-                if(c >= 0x00ff)
-                {
-                    textIsANSI = false;
-                    break;
-                }
-            }
+            TranslationRresult translationResult = mTranslationHelper.GetTranslation(mSearchText, mSelectedLanguage);
 
-            string selectedLanguageCode = SelectedLanguage == Language.Japanese ? "ja" : "cn";
-            string languageSearchCode = textIsANSI ? "en|" + selectedLanguageCode : selectedLanguageCode + "|en";
-
-            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", SearchText, languageSearchCode);
-
-            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-            if (SelectedLanguage == Language.Chinese)
-            {
-                // Google translate uses iso-8859-1 for Chinese pinyin encoding.
-                encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
-            }
-            else
-            {
-                encoding = System.Text.Encoding.GetEncoding("Shift_JIS");
-            }
-
-            WebClient webClient = new WebClient();
-            webClient.Encoding = encoding;
-
-            string googleResult;
-            try
-            {
-                byte[] htmlData = webClient.DownloadData(googleTranslateURL);
-                googleResult = encoding.GetString(htmlData);
-            }
-            catch (Exception ex)
-            {
-                // TODO: Show message
-                return;
-            }
-
-            mshtml.HTMLDocument doc = new mshtml.HTMLDocument();
-            mshtml.IHTMLDocument2 doc2 = (mshtml.IHTMLDocument2)doc;
-            doc2.write(googleResult);
-
-            mshtml.IHTMLElement elemResultBox = doc.getElementById("result_box");
-            mshtml.IHTMLElement elemTranslit = doc.getElementById("src-translit");
-
-            string txtResultBox = elemResultBox.innerText;
-            string txtTranslit = elemTranslit.innerText;
-
-            this.txtSearchText.Text = SearchText;
-            this.txtRomaji.Text = txtTranslit;
-            this.txtEnglish.Text = txtResultBox;
+            this.txtSearchText.Text = translationResult.mSourceText;
+            this.txtRomaji.Text = translationResult.mTranslitText;
+            this.txtEnglish.Text = translationResult.mTranslatedText;
         }
 
         /// <summary>
@@ -134,90 +82,30 @@ namespace Wakaran
         {
             listExampleSentences.Items.Clear();
 
-            if (SelectedLanguage == Language.Japanese)
+            if (mSelectedLanguage == Language.Japanese)
             {
                 listExampleSentences.Columns[0].Text = "Japanese";
                 listExampleSentences.Columns[1].Text = "English";
             }
-            else if (SelectedLanguage == Language.Chinese)
+            else if (mSelectedLanguage == Language.Chinese)
             {
                 listExampleSentences.Columns[0].Text = "中文";
                 listExampleSentences.Columns[1].Text = "日本語";
             }
 
-            List<string> sourceTexts = new List<string>();
-            List<string> translatedTexts = new List<string>();
-
+            ExampleSearchResult exampleSearchResult = null;
             await Task.Run(() =>
             {
-                WebClient webClient = new WebClient();
-                webClient.Encoding = System.Text.Encoding.UTF8;
-
-                string weblioURL = String.Format("https://{0}.weblio.jp/sentence/content/{1}", SelectedLanguage == Language.Japanese ? "ejje" : "cjjc", SearchText);
-                string weblioResult;
-
-                try
-                {
-                    weblioResult = webClient.DownloadString(weblioURL);
-
-                }
-                catch (Exception ex)
-                {
-                    // TODO: show message
-                    return;
-                }
-
-                string sourceTextClassName = SelectedLanguage == Language.Japanese ? "CJJ" : "CC";
-                string targetTextClassName = SelectedLanguage == Language.Japanese ? "CJE" : "CJ";
-
-                Regex r = new Regex(Regex.Escape(String.Format("<p class=qot{0}>", sourceTextClassName)) + "(.*?)" + Regex.Escape("</p>"));
-                MatchCollection matches = r.Matches(weblioResult);
-                foreach (Match match in matches)
-                {
-                    string str = match.Groups[1].Value;
-                    int iSpan = str.IndexOf("<span");
-                    if (iSpan != -1)
-                    {
-                        str = str.Substring(0, iSpan);
-                    }
-                    str = str.Replace("<b>", "").Replace("</b>", "");
-                    sourceTexts.Add(str);
-                }
-
-                r = new Regex(Regex.Escape(String.Format("<p class=qot{0}>", targetTextClassName)) + "(.*?)" + Regex.Escape("</p>"));
-                matches = r.Matches(weblioResult);
-                foreach (Match match in matches)
-                {
-                    string str = match.Groups[1].Value;
-                    int startIndex = str.IndexOf('<');
-                    int i;
-                    while (startIndex != -1)
-                    {
-                        int bracketCount = 0;
-                        for (i = startIndex + 1; i < str.Length; i++)
-                        {
-                            if (str[i] == '<')
-                                bracketCount++;
-                            else if (str[i] == '>')
-                            {
-                                if (bracketCount == 0)
-                                    break;
-                                bracketCount--;
-                            }
-                        }
-                        str = str.Remove(startIndex, i - startIndex + 1);
-                        str = Regex.Replace(str, "<span>(.*?)</span>", "");
-                        str = Regex.Replace(str, "&(.*?);", "");
-                        startIndex = str.IndexOf('<');
-                    }
-                    translatedTexts.Add(str);
-                }
+                exampleSearchResult = mExampleSentenceHelper.GetExampleSentences(mSearchText, mSelectedLanguage);
             });
 
-            for (int i = 0; i < sourceTexts.Count() && i < translatedTexts.Count(); i++)
+            if(exampleSearchResult != null)
             {
-                ListViewItem item1 = new ListViewItem(new[] { sourceTexts[i], translatedTexts[i] });
-                listExampleSentences.Items.Add(item1);
+                foreach(ExampleSentence exampleSentence in exampleSearchResult.mExampleSentences)
+                {
+                    ListViewItem item1 = new ListViewItem(new[] { exampleSentence.mSourceText, exampleSentence.mTargetText });
+                    listExampleSentences.Items.Add(item1);
+                }
             }
         }
 
@@ -225,7 +113,7 @@ namespace Wakaran
         {
             dataViewKanji.Rows.Clear();
 
-            if (SelectedLanguage == Language.Chinese)
+            if (mSelectedLanguage == Language.Chinese)
             {
                 dataViewKanji.Columns[0].Width = 250;
             }
@@ -239,10 +127,10 @@ namespace Wakaran
 
             await Task.Run(() =>
             {
-                foreach (char c in SearchText)
+                foreach (char c in mSearchText)
                 {
                     string kanjiURL;
-                    if (SelectedLanguage == Language.Japanese)
+                    if (mSelectedLanguage == Language.Japanese)
                         kanjiURL = String.Format("http://kanji.nihongo.cz/image.php?text={0}&font=sod.ttf&fontsize=300", c);
                     else
                         kanjiURL = String.Format("http://cdn.yabla.com/chinese_static/strokes/{0}-bw.png", c);
@@ -283,14 +171,14 @@ namespace Wakaran
 
             if (m.Msg == 0x0312) // WM_HOTKEY
             {
-                SearchText =  Clipboard.GetText();
+                mSearchText =  Clipboard.GetText();
                 
-                if(SearchText != "")
+                if(mSearchText != "")
                 {
-                    TimeAtActivation = DateTime.Now.TimeOfDay;
+                    mTimeAtActivation = DateTime.Now.TimeOfDay;
                     this.Visible = true;
                     this.WindowState = FormWindowState.Normal;
-                    this.TopMost = true;
+                    //this.TopMost = true;
                     this.BringToFront();
                     SetForegroundWindow(this.Handle);
 
@@ -313,7 +201,7 @@ namespace Wakaran
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (this.Visible && (DateTime.Now.TimeOfDay - TimeAtActivation).Seconds > 1.0f && GetForegroundWindow() != this.Handle)
+            if (this.Visible && (DateTime.Now.TimeOfDay - mTimeAtActivation).Seconds > 1.0f && GetForegroundWindow() != this.Handle)
             {
                 this.Visible = false;
             }
@@ -321,20 +209,20 @@ namespace Wakaran
 
         private void btnLinkWeblio_Click(object sender, EventArgs e)
         {
-            string weblioURL = String.Format("https://{0}.weblio.jp/sentence/content/{1}", SelectedLanguage == Language.Japanese ? "ejje" : "cjjc", SearchText);
+            string weblioURL = String.Format("https://{0}.weblio.jp/sentence/content/{1}", mSelectedLanguage == Language.Japanese ? "ejje" : "cjjc", mSearchText);
             System.Diagnostics.Process.Start(weblioURL);
         }
 
         private void btnLinkGoogleTrans_Click(object sender, EventArgs e)
         {
-            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", SearchText, SelectedLanguage == Language.Japanese ? "ja|en" : "cn|en");
+            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", mSearchText, mSelectedLanguage == Language.Japanese ? "ja|en" : "cn|en");
             System.Diagnostics.Process.Start(googleTranslateURL);
         }
 
         private void btnLanguageJP_Click(object sender, EventArgs e)
         {
-            SelectedLanguage = Language.Japanese;
-            if (SearchText != "")
+            mSelectedLanguage = Language.Japanese;
+            if (mSearchText != "")
             {
                 FillDictionary();
                 FillExamples();
@@ -344,8 +232,8 @@ namespace Wakaran
 
         private void btnLanguageCN_Click(object sender, EventArgs e)
         {
-            SelectedLanguage = Language.Chinese;
-            if(SearchText != "")
+            mSelectedLanguage = Language.Chinese;
+            if(mSearchText != "")
             {
                 FillDictionary();
                 FillExamples();
@@ -356,15 +244,35 @@ namespace Wakaran
         private void btnStrokeOrder_Click(object sender, EventArgs e)
         {
             string strokeOrderURL;
-            if (SelectedLanguage == Language.Japanese)
+            if (mSelectedLanguage == Language.Japanese)
             {
-                strokeOrderURL = String.Format("http://jisho.org/search/%23kanji {0}", SearchText);
+                strokeOrderURL = String.Format("http://jisho.org/search/%23kanji {0}", mSearchText);
             }
             else
             {
-                strokeOrderURL = String.Format("https://www.yellowbridge.com/chinese/character-stroke-order.php?word={0}", SearchText);
+                strokeOrderURL = String.Format("https://www.yellowbridge.com/chinese/character-stroke-order.php?word={0}", mSearchText);
             }
             System.Diagnostics.Process.Start(strokeOrderURL);
         }
+
+        private void listExampleSentences_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            SetExampleToolTip(e.Item);
+        }
+
+        private async void SetExampleToolTip(ListViewItem item)
+        {
+            TranslationRresult translationResult = null;
+            await Task.Run(() =>
+            {
+                translationResult = mTranslationHelper.GetTranslation(item.Text, mSelectedLanguage);
+            });
+
+            if(translationResult != null && translationResult.mTranslitText != "")
+            {
+                item.ToolTipText = translationResult.mTranslitText;
+            }
+        }
+
     }
 }
