@@ -63,7 +63,7 @@ namespace Wakaran
 
             mKanjiHelper.LoadKanjiInfo();
 
-            MessageBox.Show("Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry foc the copied text.", "How to use");
+            MessageBox.Show("Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry for the copied text.", "How to use");
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Wakaran
             {
                 foreach(ExampleSentence exampleSentence in exampleSearchResult.mExampleSentences)
                 {
-                    ListViewItem item1 = new ListViewItem(new[] { exampleSentence.mSourceText, exampleSentence.mTargetText });
-                    listExampleSentences.Items.Add(item1);
+                    ListViewItem item = new ListViewItem(new[] { exampleSentence.mSourceText, exampleSentence.mTargetText });
+                    listExampleSentences.Items.Add(item);
                 }
             }
         }
