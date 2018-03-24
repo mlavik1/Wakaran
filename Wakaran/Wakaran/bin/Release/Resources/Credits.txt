@@ -1,0 +1,19 @@
+Made by: Matias Lavik
+
+Translations:
+  Google Translate
+   (https://translate.google.com/)
+
+Example sentences:
+  Weblio
+   (https://ejje.weblio.jp/)
+   (https://cjjc.weblio.jp/)
+
+Kanji onyomi/kunyomi:
+  Database for the 1,945 basic Japanese kanji (J-1945D) / by Tamaoka, Kirsner, Yanase, Miyaoka and Kawakami
+   (http://ota.ox.ac.uk/desc/2417)
+
+Kanji stroke order images:
+  http://kanji.nihongo.cz/
+
+Thanks to my co-workers and friends for testing, suggestions and feedback.

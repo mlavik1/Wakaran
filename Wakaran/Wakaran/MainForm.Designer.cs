@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.txtSearchText = new System.Windows.Forms.RichTextBox();
             this.txtRomaji = new System.Windows.Forms.RichTextBox();
             this.txtEnglish = new System.Windows.Forms.RichTextBox();
@@ -277,9 +278,9 @@
             // 
             // KanjiInfo
             // 
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.KanjiInfo.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.KanjiInfo.DefaultCellStyle = dataGridViewCellStyle2;
             this.KanjiInfo.FillWeight = 111.9289F;
             this.KanjiInfo.HeaderText = "Info";
             this.KanjiInfo.Name = "KanjiInfo";
@@ -296,6 +297,7 @@
             this.Controls.Add(this.btnLinkGoogleTrans);
             this.Controls.Add(this.btnLinkWeblio);
             this.Controls.Add(this.tabControl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Wakaran";
             this.Load += new System.EventHandler(this.MainForm_Load);
