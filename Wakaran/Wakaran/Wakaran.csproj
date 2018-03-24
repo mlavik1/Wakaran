@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExampleSentenceHelper.cs" />
+    <Compile Include="KanjiHelper.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -97,6 +98,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\StrokeOrderIcon1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\KanjiInfo.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

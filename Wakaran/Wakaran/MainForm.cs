@@ -36,6 +36,7 @@ namespace Wakaran
 
         TranslationHelper mTranslationHelper = new TranslationHelper();
         ExampleSentenceHelper mExampleSentenceHelper = new ExampleSentenceHelper();
+        KanjiHelper mKanjiHelper = new KanjiHelper();
 
         string mSearchText = "";
 
@@ -59,6 +60,8 @@ namespace Wakaran
 
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
+
+            mKanjiHelper.LoadKanjiInfo();
 
             MessageBox.Show("Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry foc the copied text.", "How to use");
         }
@@ -122,46 +125,27 @@ namespace Wakaran
                 dataViewKanji.Columns[0].Width = 180;
             }
 
-            List<Image> images = new List<Image>();
-            List<String> texts = new List<string>();
+            List<KanjiSearchResult> kanjiInfo = new List<KanjiSearchResult>();
 
             await Task.Run(() =>
             {
                 foreach (char c in mSearchText)
                 {
-                    string kanjiURL;
-                    if (mSelectedLanguage == Language.Japanese)
-                        kanjiURL = String.Format("http://kanji.nihongo.cz/image.php?text={0}&font=sod.ttf&fontsize=300", c);
-                    else
-                        kanjiURL = String.Format("http://cdn.yabla.com/chinese_static/strokes/{0}-bw.png", c);
-
-                    Uri uriResult;
-                    bool isValidURL = Uri.TryCreate(kanjiURL, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
-                    if (isValidURL)
+                    KanjiSearchResult kanjiSearchResult = mKanjiHelper.GetKanjiInfo(c, mSelectedLanguage);
+                    if(kanjiSearchResult != null && kanjiSearchResult.mStrokeOrderImage != null)
                     {
-                        try
-                        {
-                            byte[] imageData = (new WebClient()).DownloadData(uriResult);
-                            MemoryStream stream = new MemoryStream(imageData);
-                            Image img = Image.FromStream(stream);
-
-                            images.Add(img);
-                            texts.Add("TODO");
-                        }
-                        catch (System.Net.WebException ex)
-                        {
-                        }
+                        kanjiInfo.Add(kanjiSearchResult);
                     }
                 }
             });
 
-            for (int i = 0; i < images.Count; i++)
+            for (int i = 0; i < kanjiInfo.Count; i++)
                 dataViewKanji.Rows.Add();
 
-            for(int i = 0; i < images.Count; i++)
+            for(int i = 0; i < kanjiInfo.Count; i++)
             {
-                dataViewKanji.Rows[i].Cells[0].Value = images[i];
-                dataViewKanji.Rows[i].Cells[1].Value = texts[i];       
+                dataViewKanji.Rows[i].Cells[0].Value = kanjiInfo[i].mStrokeOrderImage;
+                dataViewKanji.Rows[i].Cells[1].Value = kanjiInfo[i].mDescription;       
             }
         }
 
