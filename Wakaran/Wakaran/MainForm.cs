@@ -63,7 +63,8 @@ namespace Wakaran
 
             mKanjiHelper.LoadKanjiInfo();
 
-            MessageBox.Show("Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry for the copied text.", "How to use");
+            MessageForm messageForm = new MessageForm("How to use", "Press CTRL+C to copy text to clipboard.\nPress CTRL+ALT+C to show dictionary entry for the copied text.");
+            messageForm.Show();
         }
 
         /// <summary>
