@@ -22,65 +22,15 @@ namespace Wakaran
         {
             TranslationRresult translationResult = new TranslationRresult();
 
-            bool textIsANSI = true;
-            foreach (char c in inSearchText)
-            {
-                if (c >= 0x00ff)
-                {
-                    textIsANSI = false;
-                    break;
-                }
-            }
+            MicrosoftTranslationService transService = new MicrosoftTranslationService();
+            TranslationServiceResult transServiceResult = transService.GetTranslation(inSearchText, inLanguage);
 
-            translationResult.mSourceLanguage = textIsANSI ? Language.English : inLanguage;
-            translationResult.mTargetLanguage = textIsANSI ? inLanguage : Language.English;
-
-            string sourceLanguageCode = GetGoogleLanguageCode(translationResult.mSourceLanguage);
-            string targetLanguageCode = GetGoogleLanguageCode(translationResult.mTargetLanguage);
-
-            string languageSearchCode = sourceLanguageCode + "|" + targetLanguageCode;
-
-            string googleTranslateURL = String.Format("http://www.google.com/translate_t?hl=en&ie=UTF8&text={0}&langpair={1}", inSearchText, languageSearchCode);
-
-            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-            if (inLanguage == Language.Chinese)
-            {
-                // Google translate uses iso-8859-1 for Chinese pinyin encoding.
-                encoding = System.Text.Encoding.GetEncoding("iso-8859-1");
-            }
-            else
-            {
-                encoding = System.Text.Encoding.GetEncoding("Shift_JIS");
-            }
-
-            WebClient webClient = new WebClient();
-            webClient.Encoding = encoding;
-
-            string googleResult;
-            try
-            {
-                byte[] htmlData = webClient.DownloadData(googleTranslateURL);
-                googleResult = encoding.GetString(htmlData);
-            }
-            catch (Exception ex)
-            {
-                // TODO: Show message
-                return translationResult;
-            }
-
-            mshtml.HTMLDocument doc = new mshtml.HTMLDocument();
-            mshtml.IHTMLDocument2 doc2 = (mshtml.IHTMLDocument2)doc;
-            doc2.write(googleResult);
-
-            mshtml.IHTMLElement elemResultBox = doc.getElementById("result_box");
-            mshtml.IHTMLElement elemTranslit = doc.getElementById("src-translit");
-
-            string txtResultBox = elemResultBox.innerText;
-            string txtTranslit = elemTranslit.innerText;
+            MicrosoftTransliterationService translitService = new MicrosoftTransliterationService();
+            TransliterationServiceResult translitServiceResult = translitService.GetTransliteration(inSearchText, inLanguage);
 
             translationResult.mSourceText = inSearchText;
-            translationResult.mTranslitText = txtTranslit;
-            translationResult.mTranslatedText = txtResultBox;
+            translationResult.mTranslitText = transServiceResult != null ? transServiceResult.translation : "TRANSLATION FAILED";
+            translationResult.mTranslatedText = translitServiceResult != null ? translitServiceResult.transliteration : "";
             return translationResult;
         }
 
